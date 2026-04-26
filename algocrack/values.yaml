@@ -1,0 +1,184 @@
+namespace:
+  create: true
+  name: algocrack
+
+global:
+  imagePullSecrets: []
+  storageClass: ""
+
+images:
+  apiGateway:
+    repository: hrishabhjoshi/api-gateway
+    tag: latest
+    pullPolicy: Always
+  authService:
+    repository: hrishabhjoshi/auth-service
+    tag: latest
+    pullPolicy: Always
+  problemService:
+    repository: hrishabhjoshi/problem-service
+    tag: latest
+    pullPolicy: Always
+  submissionService:
+    repository: hrishabhjoshi/submission-service
+    tag: latest
+    pullPolicy: Always
+  codeExecutionEngine:
+    repository: hrishabhjoshi/code-execution-engine
+    tag: latest
+    pullPolicy: Always
+  frontend:
+    repository: hrishabhjoshi/frontend
+    tag: latest
+    pullPolicy: Always
+
+ingress:
+  enabled: true
+  className: nginx
+  host: algocrack.local
+  annotations: {}
+  paths:
+    - path: /
+      pathType: Prefix
+      service: frontend
+      port: 3000
+    - path: /api
+      pathType: Prefix
+      service: api-gateway
+      port: 9090
+  tls:
+    enabled: false
+    secretName: ""
+
+secrets:
+  useExisting: false
+  appSecretName: ""
+  jwtSecretName: ""
+
+auth:
+  google:
+    clientId: replace-me
+    clientSecret: replace-me
+    redirectUri: http://localhost:9090/api/v1/auth/login/oauth2/code/google
+  jwt:
+    expirySeconds: 604800
+    cookieExpirySeconds: 604800
+    privateKeyPem: |
+      REPLACE_WITH_RSA_PRIVATE_KEY_PEM
+    publicKeyPem: |
+      REPLACE_WITH_RSA_PUBLIC_KEY_PEM
+
+mysql:
+  enabled: true
+  image: mysql:8.0
+  databaseNames:
+    auth: auth_db
+    problem: problem_db
+    submission: submission_db
+  auth:
+    rootPassword: change-me
+    username: root
+    password: change-me
+  persistence:
+    size: 10Gi
+    storageClass: ""
+  resources:
+    requests:
+      cpu: 200m
+      memory: 512Mi
+    limits:
+      cpu: "1"
+      memory: 1Gi
+
+redis:
+  enabled: true
+  image: redis:7-alpine
+  persistenceMode: AOF
+  persistence:
+    size: 2Gi
+    storageClass: ""
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+
+externalServices:
+  mysql:
+    host: ""
+    port: 3306
+  redis:
+    host: ""
+    port: 6379
+
+services:
+  apiGateway:
+    replicaCount: 1
+    resources: {}
+    autoscaling:
+      enabled: false
+      minReplicas: 1
+      maxReplicas: 5
+      targetCPUUtilizationPercentage: 70
+  authService:
+    replicaCount: 1
+    resources: {}
+  problemService:
+    replicaCount: 1
+    resources: {}
+  submissionService:
+    replicaCount: 1
+    resources: {}
+  codeExecutionEngine:
+    replicaCount: 1
+    workerCount: 5
+    backend: worker-pod
+    queue:
+      name: execution:queue
+      statusPrefix: execution:status
+      statusTtlSeconds: 3600
+      resultPrefix: execution:job-result
+      resultTtlSeconds: 600
+      retryCount: 3
+    execution:
+      timeoutSeconds: 10
+      pollTimeoutSeconds: 5
+      memorySoftLimitMb: 1024
+      extraClasspath: /app/libs/*
+    startupProbe:
+      initialDelaySeconds: 30
+      periodSeconds: 10
+      failureThreshold: 12
+    readinessProbe:
+      initialDelaySeconds: 0
+      periodSeconds: 10
+    livenessProbe:
+      initialDelaySeconds: 0
+      periodSeconds: 15
+    autoscaling:
+      enabled: false
+      minReplicas: 1
+      maxReplicas: 5
+      targetCPUUtilizationPercentage: 70
+    nodeSelector: {}
+    tolerations: []
+    affinity: {}
+    resources:
+      requests:
+        cpu: 500m
+        memory: 1Gi
+      limits:
+        cpu: "2"
+        memory: 3Gi
+  frontend:
+    replicaCount: 1
+    publicApiBaseUrl: http://localhost:9090
+    internalApiBaseUrl: http://api-gateway:9090
+    autoscaling:
+      enabled: false
+      minReplicas: 1
+      maxReplicas: 3
+      targetCPUUtilizationPercentage: 70
+    resources: {}

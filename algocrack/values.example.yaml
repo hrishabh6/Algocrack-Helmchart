@@ -1,0 +1,45 @@
+namespace:
+  create: true
+  name: algocrack
+
+ingress:
+  enabled: true
+  className: nginx
+  host: algocrack.local
+
+secrets:
+  useExisting: false
+  appSecretName: ""
+  jwtSecretName: ""
+
+auth:
+  google:
+    clientId: your-google-client-id
+    clientSecret: your-google-client-secret
+    redirectUri: http://localhost:9090/api/v1/auth/login/oauth2/code/google
+  jwt:
+    privateKeyPem: |
+      -----BEGIN PRIVATE KEY-----
+      REPLACE_ME
+      -----END PRIVATE KEY-----
+    publicKeyPem: |
+      -----BEGIN PUBLIC KEY-----
+      REPLACE_ME
+      -----END PUBLIC KEY-----
+
+mysql:
+  auth:
+    rootPassword: change-me
+    username: root
+    password: change-me
+
+services:
+  codeExecutionEngine:
+    workerCount: 5
+    resources:
+      requests:
+        cpu: 500m
+        memory: 1Gi
+      limits:
+        cpu: "2"
+        memory: 3Gi

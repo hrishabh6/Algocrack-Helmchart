@@ -1,0 +1,14 @@
+AlgoCrack Helm scaffold is installed.
+
+This Phase 2 chart currently templates:
+
+- Namespace
+- Shared ConfigMaps
+- Generated or existing Secret wiring
+
+Next steps:
+
+1. Render and inspect:
+   helm template {{ .Release.Name }} {{ .Chart.Name }}
+2. Provide real credentials or existing secret names before live deployment.
+3. Add infrastructure and workload templates in the next Helm phase.

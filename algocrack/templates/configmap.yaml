@@ -1,0 +1,66 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: algocrack-config
+  namespace: {{ include "algocrack.namespace" . }}
+  labels:
+    {{- include "algocrack.labels" . | nindent 4 }}
+data:
+  SPRING_DATASOURCE_HIKARI_INITIALIZATION_FAIL_TIMEOUT: "0"
+  SPRING_FLYWAY_CONNECT_RETRIES: "10"
+  AUTH_DATASOURCE_URL: jdbc:mysql://{{ include "algocrack.mysqlHost" . }}:{{ include "algocrack.mysqlPort" . }}/{{ .Values.mysql.databaseNames.auth }}
+  PROBLEM_DATASOURCE_URL: jdbc:mysql://{{ include "algocrack.mysqlHost" . }}:{{ include "algocrack.mysqlPort" . }}/{{ .Values.mysql.databaseNames.problem }}
+  SUBMISSION_DATASOURCE_URL: jdbc:mysql://{{ include "algocrack.mysqlHost" . }}:{{ include "algocrack.mysqlPort" . }}/{{ .Values.mysql.databaseNames.submission }}
+  SPRING_DATA_REDIS_HOST: {{ include "algocrack.redisHost" . | quote }}
+  SPRING_DATA_REDIS_PORT: {{ include "algocrack.redisPort" . | quote }}
+  SPRING_DATA_REDIS_TIMEOUT: 5000ms
+  AUTH_SERVICE_BASE_URL: http://auth-service:7483
+  PROBLEM_SERVICE_URL: http://problem-service:8084
+  SUBMISSION_SERVICE_URL: http://submission-service:8080
+  CXE_SERVICE_URL: http://code-execution-engine:8081
+  EXECUTION_MODE: worker
+  EXECUTION_BACKEND: {{ .Values.services.codeExecutionEngine.backend | quote }}
+  WORKER_COUNT: {{ .Values.services.codeExecutionEngine.workerCount | quote }}
+  EXECUTION_WORKER_QUEUE_CAPACITY: "100"
+  EXECUTION_TIMEOUT_SECONDS: {{ .Values.services.codeExecutionEngine.execution.timeoutSeconds | quote }}
+  EXECUTION_POLL_TIMEOUT_SECONDS: {{ .Values.services.codeExecutionEngine.execution.pollTimeoutSeconds | quote }}
+  EXECUTION_MEMORY_SOFT_LIMIT_MB: {{ .Values.services.codeExecutionEngine.execution.memorySoftLimitMb | quote }}
+  EXECUTION_EXTRA_CLASSPATH: {{ .Values.services.codeExecutionEngine.execution.extraClasspath | quote }}
+  EXECUTION_COMPILATION_TIMEOUT_SECONDS: "30"
+  EXECUTION_QUEUE_NAME: {{ .Values.services.codeExecutionEngine.queue.name | quote }}
+  EXECUTION_STATUS_PREFIX: {{ .Values.services.codeExecutionEngine.queue.statusPrefix | quote }}
+  EXECUTION_STATUS_TTL_SECONDS: {{ .Values.services.codeExecutionEngine.queue.statusTtlSeconds | quote }}
+  EXECUTION_RESULT_PREFIX: {{ .Values.services.codeExecutionEngine.queue.resultPrefix | quote }}
+  EXECUTION_RESULT_TTL_SECONDS: {{ .Values.services.codeExecutionEngine.queue.resultTtlSeconds | quote }}
+  EXECUTION_RETRY_COUNT: {{ .Values.services.codeExecutionEngine.queue.retryCount | quote }}
+  KUBERNETES_JOB_IMAGE: {{ printf "%s:%s" .Values.images.codeExecutionEngine.repository .Values.images.codeExecutionEngine.tag | quote }}
+  KUBERNETES_JOB_IMAGE_PULL_POLICY: {{ .Values.images.codeExecutionEngine.pullPolicy | quote }}
+  KUBERNETES_SERVICE_ACCOUNT_NAME: cxe-job-runner
+  KUBERNETES_JOB_ACTIVE_DEADLINE_SECONDS: "30"
+  KUBERNETES_JOB_COMPLETION_TIMEOUT_SECONDS: "40"
+  KUBERNETES_JOB_RESULT_POLL_INTERVAL_MILLIS: "1000"
+  KUBERNETES_JOB_MAX_ATTEMPTS: "2"
+  KUBERNETES_JOB_RETRY_DELAY_MILLIS: "1000"
+  KUBERNETES_JOB_MAX_PAYLOAD_BYTES: "65536"
+  KUBERNETES_JOB_TTL_SECONDS_AFTER_FINISHED: "120"
+  KUBERNETES_JOB_DELETE_AFTER_READ: "true"
+  KUBERNETES_JOB_RESULT_TTL_SECONDS: "600"
+  KUBERNETES_JOB_CPU_REQUEST: 250m
+  KUBERNETES_JOB_MEMORY_REQUEST: 256Mi
+  KUBERNETES_JOB_CPU_LIMIT: 500m
+  KUBERNETES_JOB_MEMORY_LIMIT: 256Mi
+  NEXT_PUBLIC_API_BASE_URL: {{ .Values.services.frontend.publicApiBaseUrl | quote }}
+  GOOGLE_REDIRECT_URI: {{ .Values.auth.google.redirectUri | quote }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mysql-initdb
+  namespace: {{ include "algocrack.namespace" . }}
+  labels:
+    {{- include "algocrack.labels" . | nindent 4 }}
+data:
+  init-databases.sql: |
+    CREATE DATABASE IF NOT EXISTS {{ .Values.mysql.databaseNames.auth }};
+    CREATE DATABASE IF NOT EXISTS {{ .Values.mysql.databaseNames.problem }};
+    CREATE DATABASE IF NOT EXISTS {{ .Values.mysql.databaseNames.submission }};
