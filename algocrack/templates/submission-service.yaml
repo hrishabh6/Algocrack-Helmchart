@@ -1,0 +1,68 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: submission-service
+  namespace: {{ include "algocrack.namespace" . }}
+  labels:
+    {{- include "algocrack.labels" . | nindent 4 }}
+    {{- include "algocrack.componentLabel" "submission-service" | nindent 4 }}
+spec:
+  replicas: {{ .Values.services.submissionService.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "algocrack.componentSelectorLabels" (dict "context" . "component" "submission-service") | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "algocrack.componentSelectorLabels" (dict "context" . "component" "submission-service") | nindent 8 }}
+    spec:
+      {{- include "algocrack.imagePullSecrets" . | nindent 6 }}
+      containers:
+        - name: submission-service
+          image: {{ printf "%s:%s" .Values.images.submissionService.repository .Values.images.submissionService.tag }}
+          imagePullPolicy: {{ .Values.images.submissionService.pullPolicy }}
+          ports:
+            - containerPort: 8080
+          envFrom:
+            - configMapRef:
+                name: algocrack-config
+            - secretRef:
+                name: {{ include "algocrack.appSecretName" . }}
+          env:
+            - name: SERVER_PORT
+              value: "8080"
+            - name: SPRING_DATASOURCE_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: algocrack-config
+                  key: SUBMISSION_DATASOURCE_URL
+          resources:
+            {{- toYaml .Values.services.submissionService.resources | nindent 12 }}
+          livenessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8080
+            initialDelaySeconds: 40
+            periodSeconds: 15
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8080
+            initialDelaySeconds: 20
+            periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: submission-service
+  namespace: {{ include "algocrack.namespace" . }}
+  labels:
+    {{- include "algocrack.labels" . | nindent 4 }}
+    {{- include "algocrack.componentLabel" "submission-service" | nindent 4 }}
+spec:
+  selector:
+    {{- include "algocrack.componentSelectorLabels" (dict "context" . "component" "submission-service") | nindent 4 }}
+  ports:
+    - name: http
+      port: 8080
+      targetPort: 8080

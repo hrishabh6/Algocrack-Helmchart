@@ -1,0 +1,17 @@
+{{- if .Values.mysql.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mysql-data
+  namespace: {{ include "algocrack.namespace" . }}
+  labels:
+    {{- include "algocrack.labels" . | nindent 4 }}
+    {{- include "algocrack.componentLabel" "mysql" | nindent 4 }}
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.mysql.persistence.size }}
+  {{- include "algocrack.storageClassName" (dict "local" .Values.mysql.persistence.storageClass "global" .Values.global.storageClass) | nindent 2 }}
+{{- end }}

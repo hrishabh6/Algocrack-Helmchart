@@ -1,0 +1,87 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth-service
+  namespace: {{ include "algocrack.namespace" . }}
+  labels:
+    {{- include "algocrack.labels" . | nindent 4 }}
+    {{- include "algocrack.componentLabel" "auth-service" | nindent 4 }}
+spec:
+  replicas: {{ .Values.services.authService.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "algocrack.componentSelectorLabels" (dict "context" . "component" "auth-service") | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "algocrack.componentSelectorLabels" (dict "context" . "component" "auth-service") | nindent 8 }}
+    spec:
+      {{- include "algocrack.imagePullSecrets" . | nindent 6 }}
+      containers:
+        - name: auth-service
+          image: {{ printf "%s:%s" .Values.images.authService.repository .Values.images.authService.tag }}
+          imagePullPolicy: {{ .Values.images.authService.pullPolicy }}
+          ports:
+            - containerPort: 7483
+          envFrom:
+            - configMapRef:
+                name: algocrack-config
+            - secretRef:
+                name: {{ include "algocrack.appSecretName" . }}
+          env:
+            - name: SERVER_PORT
+              value: "7483"
+            - name: SPRING_DATASOURCE_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: algocrack-config
+                  key: AUTH_DATASOURCE_URL
+            - name: JWT_PRIVATE_KEY_PATH
+              value: file:/run/keys/private.pem
+            - name: JWT_PUBLIC_KEY_PATH
+              value: file:/run/keys/public.pem
+          resources:
+            {{- toYaml .Values.services.authService.resources | nindent 12 }}
+          volumeMounts:
+            - name: jwt-signing-keys
+              mountPath: /run/keys
+              readOnly: true
+          startupProbe:
+            httpGet:
+              path: /actuator/health
+              port: 7483
+            initialDelaySeconds: 30
+            periodSeconds: 5
+            failureThreshold: 30
+          livenessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 7483
+            initialDelaySeconds: 90
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 7483
+            initialDelaySeconds: 70
+            periodSeconds: 10
+      volumes:
+        - name: jwt-signing-keys
+          secret:
+            secretName: {{ include "algocrack.jwtSecretName" . }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: auth-service
+  namespace: {{ include "algocrack.namespace" . }}
+  labels:
+    {{- include "algocrack.labels" . | nindent 4 }}
+    {{- include "algocrack.componentLabel" "auth-service" | nindent 4 }}
+spec:
+  selector:
+    {{- include "algocrack.componentSelectorLabels" (dict "context" . "component" "auth-service") | nindent 4 }}
+  ports:
+    - name: http
+      port: 7483
+      targetPort: 7483

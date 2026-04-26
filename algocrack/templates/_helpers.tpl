@@ -14,6 +14,16 @@ app.kubernetes.io/name: algocrack
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end -}}
 
+{{- define "algocrack.componentLabel" -}}
+app.kubernetes.io/component: {{ . }}
+{{- end -}}
+
+{{- define "algocrack.componentSelectorLabels" -}}
+{{- $ctx := .context -}}
+{{- include "algocrack.selectorLabels" $ctx }}
+app.kubernetes.io/component: {{ .component }}
+{{- end -}}
+
 {{- define "algocrack.appSecretName" -}}
 {{- if .Values.secrets.useExisting -}}
 {{- .Values.secrets.appSecretName -}}
@@ -59,5 +69,24 @@ redis
 {{- .Values.externalServices.redis.port | toString -}}
 {{- else -}}
 6379
+{{- end -}}
+{{- end -}}
+
+{{- define "algocrack.storageClassName" -}}
+{{- $local := .local -}}
+{{- $global := .global -}}
+{{- if $local -}}
+storageClassName: {{ $local | quote }}
+{{- else if $global -}}
+storageClassName: {{ $global | quote }}
+{{- end -}}
+{{- end -}}
+
+{{- define "algocrack.imagePullSecrets" -}}
+{{- if .Values.global.imagePullSecrets }}
+imagePullSecrets:
+  {{- range .Values.global.imagePullSecrets }}
+  - name: {{ . | quote }}
+  {{- end }}
 {{- end -}}
 {{- end -}}

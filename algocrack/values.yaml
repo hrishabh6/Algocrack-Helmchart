@@ -116,7 +116,13 @@ externalServices:
 services:
   apiGateway:
     replicaCount: 1
-    resources: {}
+    resources:
+      requests:
+        cpu: 100m
+        memory: 256Mi
+      limits:
+        cpu: 500m
+        memory: 512Mi
     autoscaling:
       enabled: false
       minReplicas: 1
@@ -124,13 +130,31 @@ services:
       targetCPUUtilizationPercentage: 70
   authService:
     replicaCount: 1
-    resources: {}
+    resources:
+      requests:
+        cpu: 100m
+        memory: 384Mi
+      limits:
+        cpu: 500m
+        memory: 768Mi
   problemService:
     replicaCount: 1
-    resources: {}
+    resources:
+      requests:
+        cpu: 100m
+        memory: 256Mi
+      limits:
+        cpu: 500m
+        memory: 512Mi
   submissionService:
     replicaCount: 1
-    resources: {}
+    resources:
+      requests:
+        cpu: 100m
+        memory: 256Mi
+      limits:
+        cpu: 750m
+        memory: 768Mi
   codeExecutionEngine:
     replicaCount: 1
     workerCount: 5
@@ -181,4 +205,10 @@ services:
       minReplicas: 1
       maxReplicas: 3
       targetCPUUtilizationPercentage: 70
-    resources: {}
+    resources:
+      requests:
+        cpu: 100m
+        memory: 256Mi
+      limits:
+        cpu: 500m
+        memory: 512Mi

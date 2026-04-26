@@ -1,0 +1,74 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-gateway
+  namespace: {{ include "algocrack.namespace" . }}
+  labels:
+    {{- include "algocrack.labels" . | nindent 4 }}
+    {{- include "algocrack.componentLabel" "api-gateway" | nindent 4 }}
+spec:
+  replicas: {{ .Values.services.apiGateway.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "algocrack.componentSelectorLabels" (dict "context" . "component" "api-gateway") | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "algocrack.componentSelectorLabels" (dict "context" . "component" "api-gateway") | nindent 8 }}
+    spec:
+      {{- include "algocrack.imagePullSecrets" . | nindent 6 }}
+      containers:
+        - name: api-gateway
+          image: {{ printf "%s:%s" .Values.images.apiGateway.repository .Values.images.apiGateway.tag }}
+          imagePullPolicy: {{ .Values.images.apiGateway.pullPolicy }}
+          ports:
+            - containerPort: 9090
+          envFrom:
+            - configMapRef:
+                name: algocrack-config
+          env:
+            - name: SERVER_PORT
+              value: "9090"
+            - name: JWT_PUBLIC_KEY_PATH
+              value: file:/run/keys/public.pem
+          resources:
+            {{- toYaml .Values.services.apiGateway.resources | nindent 12 }}
+          volumeMounts:
+            - name: jwt-public-key
+              mountPath: /run/keys
+              readOnly: true
+          livenessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 9090
+            initialDelaySeconds: 40
+            periodSeconds: 15
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 9090
+            initialDelaySeconds: 20
+            periodSeconds: 10
+      volumes:
+        - name: jwt-public-key
+          secret:
+            secretName: {{ include "algocrack.jwtSecretName" . }}
+            items:
+              - key: public.pem
+                path: public.pem
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: api-gateway
+  namespace: {{ include "algocrack.namespace" . }}
+  labels:
+    {{- include "algocrack.labels" . | nindent 4 }}
+    {{- include "algocrack.componentLabel" "api-gateway" | nindent 4 }}
+spec:
+  selector:
+    {{- include "algocrack.componentSelectorLabels" (dict "context" . "component" "api-gateway") | nindent 4 }}
+  ports:
+    - name: http
+      port: 9090
+      targetPort: 9090

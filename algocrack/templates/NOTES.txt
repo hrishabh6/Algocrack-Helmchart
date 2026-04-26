@@ -1,14 +1,22 @@
-AlgoCrack Helm scaffold is installed.
+AlgoCrack Helm Phase 4 scaffold is installed.
 
-This Phase 2 chart currently templates:
+This chart currently templates:
 
 - Namespace
 - Shared ConfigMaps
 - Generated or existing Secret wiring
+- MySQL PVC, Deployment, and Service
+- Redis PVC, Deployment, and Service
+- Code Execution Engine RBAC, Deployment, and Service
+- Auth Service Deployment and Service
+- Problem Service Deployment and Service
+- Submission Service Deployment and Service
+- API Gateway Deployment and Service
+- Frontend Deployment and Service
 
 Next steps:
 
 1. Render and inspect:
    helm template {{ .Release.Name }} {{ .Chart.Name }}
 2. Provide real credentials or existing secret names before live deployment.
-3. Add infrastructure and workload templates in the next Helm phase.
+3. Add ingress and optional autoscaling manifests in the next Helm phases.
