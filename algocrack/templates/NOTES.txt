@@ -13,10 +13,11 @@ This chart currently templates:
 - Submission Service Deployment and Service
 - API Gateway Deployment and Service
 - Frontend Deployment and Service
+- Ingress
 
 Next steps:
 
 1. Render and inspect:
    helm template {{ .Release.Name }} {{ .Chart.Name }}
 2. Provide real credentials or existing secret names before live deployment.
-3. Add ingress and optional autoscaling manifests in the next Helm phases.
+3. Optionally add autoscaling manifests in the next Helm phase.

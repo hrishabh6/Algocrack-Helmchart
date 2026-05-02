@@ -36,7 +36,9 @@ ingress:
   enabled: true
   className: nginx
   host: algocrack.local
-  annotations: {}
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/proxy-body-size: "50m"
   paths:
     - path: /
       pathType: Prefix
