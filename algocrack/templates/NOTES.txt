@@ -1,4 +1,4 @@
-AlgoCrack Helm Phase 7 scaffold is installed.
+AlgoCrack Helm Phase 8 scaffold is installed.
 
 This chart currently templates:
 
@@ -15,6 +15,7 @@ This chart currently templates:
 - Frontend Deployment and Service
 - Ingress
 - Optional HPA templates for API Gateway, Code Execution Engine, and Frontend
+- Fail-fast validation for required secrets and critical override combinations
 
 Next steps:
 

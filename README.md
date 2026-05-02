@@ -76,11 +76,19 @@ Render the chart before installing:
 helm template algocrack ./helm/algocrack -f helm/my-values.yaml
 ```
 
+This is the authoritative preflight check for this chart.
+
+The chart now fails fast during rendering if required values are still placeholders or if required override combinations are incomplete.
+
 Lint the chart:
 
 ```bash
 helm lint ./helm/algocrack
 ```
+
+Note:
+
+- `helm lint` is still useful, but the fail-fast value validation is most reliably enforced by `helm template` and real install/upgrade rendering.
 
 ## Install or upgrade
 
