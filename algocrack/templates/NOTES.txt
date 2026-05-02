@@ -24,3 +24,4 @@ Next steps:
 2. Provide real credentials or existing secret names before live deployment.
 3. Install or upgrade the chart in a real cluster and validate runtime behavior.
 4. See helm/README.md for the recommended install and verification flow.
+5. See helm/VERIFY.md for the full live-cluster verification checklist.

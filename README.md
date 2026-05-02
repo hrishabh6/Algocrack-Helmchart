@@ -8,6 +8,10 @@ The chart lives under:
 
 This guide is the repo-owned path for installing, upgrading, validating, and removing the chart on a real cluster.
 
+For a step-by-step live verification checklist, see:
+
+- [VERIFY.md](/home/hrishabh/codebases/java/leetcode/helm/VERIFY.md)
+
 ## What the chart covers
 
 The chart currently templates:
