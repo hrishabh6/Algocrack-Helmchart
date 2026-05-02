@@ -1,4 +1,4 @@
-AlgoCrack Helm Phase 4 scaffold is installed.
+AlgoCrack Helm Phase 6 scaffold is installed.
 
 This chart currently templates:
 
@@ -14,10 +14,11 @@ This chart currently templates:
 - API Gateway Deployment and Service
 - Frontend Deployment and Service
 - Ingress
+- Optional HPA templates for API Gateway, Code Execution Engine, and Frontend
 
 Next steps:
 
 1. Render and inspect:
    helm template {{ .Release.Name }} {{ .Chart.Name }}
 2. Provide real credentials or existing secret names before live deployment.
-3. Optionally add autoscaling manifests in the next Helm phase.
+3. Install or upgrade the chart in a real cluster and validate runtime behavior.
