@@ -62,8 +62,11 @@ Start from the safe committed example files:
 Create your own local file, for example:
 
 ```bash
-cp helm/algocrack/values.minikube.example.yaml helm/my-values.yaml
+cp helm/algocrack/values.minikube.example.yaml helm/my-values.local.yaml
 ```
+
+`helm/my-values.local.yaml` is ignored by Git because it may contain
+credentials and key material. Never commit it.
 
 Then replace the placeholders with your own:
 
@@ -77,7 +80,7 @@ Then replace the placeholders with your own:
 Render the chart before installing:
 
 ```bash
-helm template algocrack ./helm/algocrack -f helm/my-values.yaml
+helm template algocrack ./helm/algocrack -f helm/my-values.local.yaml
 ```
 
 This is the authoritative preflight check for this chart.
@@ -100,7 +103,7 @@ Recommended install flow:
 
 ```bash
 helm upgrade --install algocrack ./helm/algocrack \
-  -f helm/my-values.yaml \
+  -f helm/my-values.local.yaml \
   --namespace algocrack \
   --create-namespace
 ```
@@ -113,7 +116,7 @@ Set a different ingress host:
 
 ```bash
 helm upgrade --install algocrack ./helm/algocrack \
-  -f helm/my-values.yaml \
+  -f helm/my-values.local.yaml \
   --set ingress.host=mydomain.local
 ```
 
@@ -121,7 +124,7 @@ Enable existing secret reuse:
 
 ```bash
 helm upgrade --install algocrack ./helm/algocrack \
-  -f helm/my-values.yaml \
+  -f helm/my-values.local.yaml \
   --set secrets.useExisting=true \
   --set secrets.appSecretName=my-app-secret \
   --set secrets.jwtSecretName=my-jwt-secret
@@ -131,7 +134,7 @@ Enable autoscaling for supported services:
 
 ```bash
 helm upgrade --install algocrack ./helm/algocrack \
-  -f helm/my-values.yaml \
+  -f helm/my-values.local.yaml \
   --set services.apiGateway.autoscaling.enabled=true \
   --set services.codeExecutionEngine.autoscaling.enabled=true \
   --set services.frontend.autoscaling.enabled=true

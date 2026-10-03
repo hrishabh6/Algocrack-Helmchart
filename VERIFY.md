@@ -50,7 +50,7 @@ Start from:
 Create a local verification file:
 
 ```bash
-cp helm/algocrack/values.minikube.example.yaml helm/my-values.yaml
+cp helm/algocrack/values.minikube.example.yaml helm/my-values.local.yaml
 ```
 
 Replace all placeholders with real values:
@@ -73,13 +73,13 @@ If you are using local ingress:
 Render the chart:
 
 ```bash
-helm template algocrack ./helm/algocrack -f helm/my-values.yaml
+helm template algocrack ./helm/algocrack -f helm/my-values.local.yaml
 ```
 
 Lint the chart:
 
 ```bash
-helm lint ./helm/algocrack -f helm/my-values.yaml
+helm lint ./helm/algocrack -f helm/my-values.local.yaml
 ```
 
 Expected result:
@@ -93,7 +93,7 @@ Install into the target namespace:
 
 ```bash
 helm upgrade --install algocrack ./helm/algocrack \
-  -f helm/my-values.yaml \
+  -f helm/my-values.local.yaml \
   --namespace algocrack \
   --create-namespace
 ```
@@ -212,7 +212,7 @@ If you want to validate autoscaling object creation:
 
 ```bash
 helm upgrade --install algocrack ./helm/algocrack \
-  -f helm/my-values.yaml \
+  -f helm/my-values.local.yaml \
   --namespace algocrack \
   --create-namespace \
   --set services.apiGateway.autoscaling.enabled=true \
