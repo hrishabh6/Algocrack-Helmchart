@@ -1,0 +1,45 @@
+namespace:
+  create: true
+  name: algocrack
+
+ingress:
+  enabled: true
+  className: nginx
+  host: algocrack.local
+
+secrets:
+  useExisting: false
+  appSecretName: ""
+  jwtSecretName: ""
+
+auth:
+  google:
+    clientId: test-google-client-id
+    clientSecret: test-google-client-secret
+    redirectUri: http://algocrack.local/api/v1/auth/login/oauth2/code/google
+  jwt:
+    privateKeyPem: |
+      -----BEGIN PRIVATE KEY-----
+      TEST_PRIVATE_KEY_FOR_HELM_VALIDATION_ONLY
+      -----END PRIVATE KEY-----
+    publicKeyPem: |
+      -----BEGIN PUBLIC KEY-----
+      TEST_PUBLIC_KEY_FOR_HELM_VALIDATION_ONLY
+      -----END PUBLIC KEY-----
+
+mysql:
+  enabled: true
+  auth:
+    rootPassword: test-root-password-123
+    username: root
+    password: test-app-password-123
+
+redis:
+  enabled: true
+
+services:
+  codeExecutionEngine:
+    workerCount: 5
+  frontend:
+    publicApiBaseUrl: ""
+    internalApiBaseUrl: http://api-gateway:9090
