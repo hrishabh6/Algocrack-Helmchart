@@ -107,6 +107,26 @@ redis:
       cpu: 500m
       memory: 512Mi
 
+monitoring:
+  enabled: true
+  prometheus:
+    image: prom/prometheus:v2.55.1
+    retention: 15d
+    service:
+      port: 9090
+  loki:
+    image: grafana/loki:3.2.1
+    service:
+      port: 3100
+  alloy:
+    image: grafana/alloy:v1.20.0
+  grafana:
+    image: grafana/grafana:11.3.1
+    adminUser: admin
+    adminPassword: admin
+    service:
+      port: 3000
+
 externalServices:
   mysql:
     host: ""
