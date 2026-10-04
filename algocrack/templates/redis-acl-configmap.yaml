@@ -1,0 +1,12 @@
+{{- if and .Values.complexityProfile.enabled .Values.complexityProfile.redisAcl.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cxe-complexity-profile-redis-acl
+  namespace: {{ include "algocrack.namespace" . }}
+  labels:
+    {{- include "algocrack.labels" . | nindent 4 }}
+data:
+  users.acl: |
+    user {{ .Values.complexityProfile.sandboxRedis.username }} off resetkeys ~execution:complexity-profile:sandbox:* &* +get +set +del +expire +ttl +ping
+{{- end }}

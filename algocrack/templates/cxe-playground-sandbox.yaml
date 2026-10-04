@@ -34,7 +34,7 @@ spec:
     - to:
         - podSelector:
             matchLabels:
-              app: redis
+              {{- include "algocrack.componentSelectorLabels" (dict "context" . "component" "redis") | nindent 14 }}
       ports:
         - protocol: TCP
           port: 6379

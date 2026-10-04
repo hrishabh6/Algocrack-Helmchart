@@ -1,0 +1,65 @@
+# Local production-simulation overlay for release candidate 1.0.0-rc2.
+# Use with secrets supplied out-of-band (never commit real credentials):
+#   helm upgrade --install algocrack ./helm/algocrack \
+#     -f helm/algocrack/values.local-prod-sim-rc2.yaml \
+#     --set secrets.internalServiceToken=... \
+#     --set mysql.auth.password=... \
+#     ...
+#
+# Phase A (pre-sandbox-runbook): static/API complexity only; CXE profile Jobs stay off.
+# Phase B (post-runbook): apply values.local-prod-sim-rc2-complexity-dynamic.yaml overlay.
+
+namespace:
+  name: algocrack
+
+images:
+  apiGateway:
+    tag: 1.0.0-rc2
+  authService:
+    tag: 1.0.0-rc2
+  problemService:
+    tag: 1.0.0-rc2
+  submissionService:
+    tag: 1.0.0-rc2
+  codeExecutionEngine:
+    tag: 1.0.0-rc2
+  frontend:
+    tag: 1.0.0-rc2
+
+ingress:
+  enabled: true
+  host: algocrack.local
+
+services:
+  codeExecutionEngine:
+    backend: kubernetes-job
+  frontend:
+    publicApiBaseUrl: http://algocrack.local/api
+    internalApiBaseUrl: http://api-gateway:9090
+
+monitoring:
+  enabled: true
+
+complexity:
+  submission:
+    apiEnabled: true
+    staticAnalysisEnabled: true
+    dynamicProfilingEnabled: false
+  problem:
+    profileApiEnabled: true
+    internalAuthRequireToken: true
+  cxe:
+    profileEnabled: false
+    internalAuthRequireToken: true
+    sandboxBackend: local-process
+    productionVerified: false
+
+complexityProfile:
+  enabled: false
+  redisAcl:
+    enabled: false
+
+secrets:
+  useExisting: true
+  appSecretName: algocrack-app-secrets
+  jwtSecretName: jwt-signing-keys

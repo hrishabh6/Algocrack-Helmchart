@@ -131,4 +131,16 @@ imagePullSecrets:
 {{- if and .Values.ingress.enabled .Values.ingress.tls.enabled (not .Values.ingress.tls.secretName) }}
   {{- fail "ingress.tls.secretName is required when ingress.tls.enabled=true" }}
 {{- end }}
+
+{{- if and (or .Values.complexity.problem.internalAuthRequireToken .Values.complexity.cxe.internalAuthRequireToken) (not .Values.secrets.useExisting) (not .Values.secrets.internalServiceToken) }}
+  {{- fail "secrets.internalServiceToken is required when complexity internal auth is enabled and secrets.useExisting=false" }}
+{{- end }}
+
+{{- if and .Values.complexity.cxe.profileEnabled (eq .Values.complexity.cxe.sandboxBackend "kubernetes-job") .Values.complexity.cxe.productionVerified (not .Values.complexityProfile.enabled) }}
+  {{- fail "complexityProfile.enabled must be true when CXE kubernetes-job sandbox is production-verified (sandbox Redis Secret + NetworkPolicy)" }}
+{{- end }}
+
+{{- if and .Values.complexity.cxe.profileEnabled (eq .Values.complexity.cxe.sandboxBackend "kubernetes-job") (not .Values.complexity.cxe.productionVerified) }}
+  {{- fail "EXECUTION_COMPLEXITY_PROFILE kubernetes-job requires productionVerified=true after sandbox runbook; keep productionVerified=false until verified" }}
+{{- end }}
 {{- end -}}

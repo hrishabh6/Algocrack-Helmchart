@@ -56,6 +56,8 @@ secrets:
   useExisting: false
   appSecretName: ""
   jwtSecretName: ""
+  # Shared token for Problem/Submission/CXE internal complexity APIs (Secret only — never ConfigMap).
+  internalServiceToken: ""
 
 auth:
   google:
@@ -235,6 +237,23 @@ services:
         cpu: 500m
         memory: 512Mi
 
+complexity:
+  submission:
+    apiEnabled: false
+    staticAnalysisEnabled: false
+    dynamicProfilingEnabled: false
+  problem:
+    profileApiEnabled: false
+    internalAuthRequireToken: false
+  cxe:
+    profileEnabled: false
+    internalAuthRequireToken: false
+    sandboxBackend: local-process
+    productionVerified: false
+    workerCount: 2
+    queueCapacity: 50
+    maxConcurrentJobs: 4
+
 complexityProfile:
   enabled: false
   sandboxRedis:
@@ -243,6 +262,8 @@ complexityProfile:
     usernameKey: username
     passwordKey: password
     username: cxe-profile-sandbox
+  redisAcl:
+    enabled: false
   networkPolicy:
     dnsNamespace: kube-system
     dnsPodLabels:

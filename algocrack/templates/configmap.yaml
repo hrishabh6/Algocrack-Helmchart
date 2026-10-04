@@ -51,6 +51,19 @@ data:
   KUBERNETES_JOB_MEMORY_LIMIT: 256Mi
   NEXT_PUBLIC_API_BASE_URL: {{ .Values.services.frontend.publicApiBaseUrl | quote }}
   GOOGLE_REDIRECT_URI: {{ .Values.auth.google.redirectUri | quote }}
+  COMPLEXITY_API_ENABLED: {{ .Values.complexity.submission.apiEnabled | quote }}
+  COMPLEXITY_STATIC_ANALYSIS_ENABLED: {{ .Values.complexity.submission.staticAnalysisEnabled | quote }}
+  COMPLEXITY_DYNAMIC_PROFILING_ENABLED: {{ .Values.complexity.submission.dynamicProfilingEnabled | quote }}
+  COMPLEXITY_PROFILE_API_ENABLED: {{ .Values.complexity.problem.profileApiEnabled | quote }}
+  COMPLEXITY_INTERNAL_AUTH_REQUIRE_TOKEN: {{ .Values.complexity.problem.internalAuthRequireToken | quote }}
+  EXECUTION_COMPLEXITY_PROFILE_ENABLED: {{ .Values.complexity.cxe.profileEnabled | quote }}
+  EXECUTION_COMPLEXITY_PROFILE_INTERNAL_AUTH_REQUIRE_TOKEN: {{ .Values.complexity.cxe.internalAuthRequireToken | quote }}
+  EXECUTION_COMPLEXITY_PROFILE_SANDBOX_BACKEND: {{ .Values.complexity.cxe.sandboxBackend | quote }}
+  EXECUTION_COMPLEXITY_PROFILE_PRODUCTION_VERIFIED: {{ .Values.complexity.cxe.productionVerified | quote }}
+  EXECUTION_COMPLEXITY_PROFILE_WORKER_COUNT: {{ .Values.complexity.cxe.workerCount | quote }}
+  EXECUTION_COMPLEXITY_PROFILE_QUEUE_CAPACITY: {{ .Values.complexity.cxe.queueCapacity | quote }}
+  EXECUTION_COMPLEXITY_PROFILE_MAX_CONCURRENT_JOBS: {{ .Values.complexity.cxe.maxConcurrentJobs | quote }}
+  EXECUTION_COMPLEXITY_PROFILE_SANDBOX_REDIS_REQUIRED: {{ .Values.complexityProfile.enabled | quote }}
 ---
 apiVersion: v1
 kind: ConfigMap

@@ -26,6 +26,10 @@ spec:
             - redis-server
             - --appendonly
             - {{ ternary "yes" "no" (eq (upper .Values.redis.persistenceMode) "AOF") | quote }}
+            {{- if and .Values.complexityProfile.enabled .Values.complexityProfile.redisAcl.enabled }}
+            - --aclfile
+            - /etc/redis-acl/users.acl
+            {{- end }}
           ports:
             - containerPort: 6379
           resources:
@@ -33,6 +37,11 @@ spec:
           volumeMounts:
             - name: redis-data
               mountPath: /data
+            {{- if and .Values.complexityProfile.enabled .Values.complexityProfile.redisAcl.enabled }}
+            - name: redis-acl
+              mountPath: /etc/redis-acl
+              readOnly: true
+            {{- end }}
           livenessProbe:
             tcpSocket:
               port: 6379
@@ -49,6 +58,11 @@ spec:
         - name: redis-data
           persistentVolumeClaim:
             claimName: redis-data
+        {{- if and .Values.complexityProfile.enabled .Values.complexityProfile.redisAcl.enabled }}
+        - name: redis-acl
+          configMap:
+            name: cxe-complexity-profile-redis-acl
+        {{- end }}
 ---
 apiVersion: v1
 kind: Service

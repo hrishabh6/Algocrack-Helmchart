@@ -1,0 +1,16 @@
+# Apply ONLY after local Kubernetes sandbox runbook passes (context/complexity_profile_sandbox_runbook.md).
+# Sets production-verified kubernetes-job profiling — locally verified production-like sandbox,
+# not AWS/EKS proof.
+
+complexity:
+  submission:
+    dynamicProfilingEnabled: true
+  cxe:
+    profileEnabled: true
+    sandboxBackend: kubernetes-job
+    productionVerified: true
+
+complexityProfile:
+  enabled: true
+  redisAcl:
+    enabled: true
