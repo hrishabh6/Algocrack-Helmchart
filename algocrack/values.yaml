@@ -234,3 +234,16 @@ services:
       limits:
         cpu: 500m
         memory: 512Mi
+
+complexityProfile:
+  enabled: false
+  sandboxRedis:
+    # Credentials live in a Kubernetes Secret (create out-of-band or via secrets.example.yaml).
+    secretName: cxe-complexity-profile-sandbox-redis
+    usernameKey: username
+    passwordKey: password
+    username: cxe-profile-sandbox
+  networkPolicy:
+    dnsNamespace: kube-system
+    dnsPodLabels:
+      k8s-app: kube-dns

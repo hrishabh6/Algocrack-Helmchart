@@ -107,6 +107,18 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.namespace
+            {{- if .Values.complexityProfile.enabled }}
+            - name: EXECUTION_COMPLEXITY_PROFILE_SANDBOX_REDIS_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.complexityProfile.sandboxRedis.secretName | quote }}
+                  key: {{ .Values.complexityProfile.sandboxRedis.usernameKey | quote }}
+            - name: EXECUTION_COMPLEXITY_PROFILE_SANDBOX_REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.complexityProfile.sandboxRedis.secretName | quote }}
+                  key: {{ .Values.complexityProfile.sandboxRedis.passwordKey | quote }}
+            {{- end }}
           resources:
             {{- toYaml .Values.services.codeExecutionEngine.resources | nindent 12 }}
           startupProbe:
