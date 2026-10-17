@@ -32,6 +32,12 @@ spec:
               value: {{ .Values.ingress.host | quote }}
             - name: PORT
               value: "8080"
+            - name: SET_REAL_IP_FROM
+              value: {{ join "," (.Values.waf.trustedProxyCidrs | default (list "127.0.0.1")) | quote }}
+            - name: REAL_IP_HEADER
+              value: X-Real-IP
+            - name: REAL_IP_RECURSIVE
+              value: "off"
           resources:
             {{- toYaml .Values.waf.resources | nindent 12 }}
           livenessProbe:

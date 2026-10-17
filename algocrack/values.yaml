@@ -144,6 +144,12 @@ externalServices:
 waf:
   modsecRuleEngine: DetectionOnly
   backend: http://api-gateway:9090
+  # Source addresses allowed to set the client IP via X-Real-IP.
+  # 127.0.0.1 ignores forwarded headers (safe default). Replace with the
+  # ingress controller's source CIDR so rate limits are per client.
+  # X-Forwarded-For is not consulted.
+  trustedProxyCidrs:
+    - 127.0.0.1
   replicaCount: 1
   resources:
     requests:
