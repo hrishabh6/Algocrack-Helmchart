@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: waf
+  namespace: {{ include "algocrack.namespace" . }}
+  labels:
+    {{- include "algocrack.labels" . | nindent 4 }}
+    {{- include "algocrack.componentLabel" "waf" | nindent 4 }}
+spec:
+  replicas: {{ .Values.waf.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "algocrack.componentSelectorLabels" (dict "context" . "component" "waf") | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "algocrack.componentSelectorLabels" (dict "context" . "component" "waf") | nindent 8 }}
+    spec:
+      {{- include "algocrack.imagePullSecrets" . | nindent 6 }}
+      containers:
+        - name: waf
+          image: {{ printf "%s:%s" .Values.images.waf.repository .Values.images.waf.tag }}
+          imagePullPolicy: {{ .Values.images.waf.pullPolicy }}
+          ports:
+            - containerPort: 8080
+          env:
+            - name: MODSEC_RULE_ENGINE
+              value: {{ .Values.waf.modsecRuleEngine | quote }}
+            - name: BACKEND
+              value: {{ .Values.waf.backend | quote }}
+            - name: SERVER_NAME
+              value: {{ .Values.ingress.host | quote }}
+            - name: PORT
+              value: "8080"
+          resources:
+            {{- toYaml .Values.waf.resources | nindent 12 }}
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 15
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: waf
+  namespace: {{ include "algocrack.namespace" . }}
+  labels:
+    {{- include "algocrack.labels" . | nindent 4 }}
+    {{- include "algocrack.componentLabel" "waf" | nindent 4 }}
+spec:
+  selector:
+    {{- include "algocrack.componentSelectorLabels" (dict "context" . "component" "waf") | nindent 4 }}
+  ports:
+    - name: http
+      port: 8080
+      targetPort: 8080

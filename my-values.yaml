@@ -38,4 +38,4 @@ services:
     workerCount: 5
   frontend:
     publicApiBaseUrl: ""
-    internalApiBaseUrl: http://api-gateway:9090
+    internalApiBaseUrl: http://waf:8080

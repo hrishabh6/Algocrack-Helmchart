@@ -25,7 +25,8 @@ The chart currently templates:
 - `problem-service`
 - `submission-service`
 - `code-execution-engine`
-- `api-gateway`
+- `api-gateway` (internal; Ingress `/api` goes to `waf`)
+- `waf` (NGINX + ModSecurity in front of the API Gateway)
 - `frontend`
 - ingress
 - optional HPAs for:
