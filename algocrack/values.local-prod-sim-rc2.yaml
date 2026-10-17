@@ -35,7 +35,7 @@ services:
     backend: kubernetes-job
   frontend:
     publicApiBaseUrl: http://algocrack.local/api
-    internalApiBaseUrl: http://api-gateway:9090
+    internalApiBaseUrl: http://waf:8080
 
 monitoring:
   enabled: true

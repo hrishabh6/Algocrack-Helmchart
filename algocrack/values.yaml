@@ -31,6 +31,10 @@ images:
     repository: hrishabhjoshi/frontend
     tag: latest
     pullPolicy: Always
+  waf:
+    repository: hrishabhjoshi/waf
+    tag: latest
+    pullPolicy: IfNotPresent
 
 ingress:
   enabled: true
@@ -46,8 +50,8 @@ ingress:
       port: 3000
     - path: /api
       pathType: Prefix
-      service: api-gateway
-      port: 9090
+      service: waf
+      port: 8080
   tls:
     enabled: false
     secretName: ""
@@ -137,6 +141,24 @@ externalServices:
     host: ""
     port: 6379
 
+waf:
+  modsecRuleEngine: DetectionOnly
+  backend: http://api-gateway:9090
+  # Source addresses allowed to set the client IP via X-Real-IP.
+  # 127.0.0.1 ignores forwarded headers (safe default). Replace with the
+  # ingress controller's source CIDR so rate limits are per client.
+  # X-Forwarded-For is not consulted.
+  trustedProxyCidrs:
+    - 127.0.0.1
+  replicaCount: 1
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 256Mi
+
 services:
   apiGateway:
     replicaCount: 1
@@ -223,7 +245,7 @@ services:
   frontend:
     replicaCount: 1
     publicApiBaseUrl: http://localhost:9090
-    internalApiBaseUrl: http://api-gateway:9090
+    internalApiBaseUrl: http://waf:8080
     autoscaling:
       enabled: false
       minReplicas: 1
