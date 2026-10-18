@@ -17,6 +17,10 @@ spec:
         {{- include "algocrack.componentSelectorLabels" (dict "context" . "component" "waf") | nindent 8 }}
     spec:
       {{- include "algocrack.imagePullSecrets" . | nindent 6 }}
+      volumes:
+        - name: waf-exclusions
+          configMap:
+            name: algocrack-waf-exclusions
       containers:
         - name: waf
           image: {{ printf "%s:%s" .Values.images.waf.repository .Values.images.waf.tag }}
@@ -38,6 +42,11 @@ spec:
               value: X-Real-IP
             - name: REAL_IP_RECURSIVE
               value: "off"
+          volumeMounts:
+            - name: waf-exclusions
+              mountPath: /opt/owasp-crs/rules/REQUEST-900-EXCLUSION-RULES-BEFORE-CRS.conf
+              subPath: REQUEST-900-EXCLUSION-RULES-BEFORE-CRS.conf
+              readOnly: true
           resources:
             {{- toYaml .Values.waf.resources | nindent 12 }}
           livenessProbe:

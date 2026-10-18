@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: algocrack-waf-exclusions
+  namespace: {{ include "algocrack.namespace" . }}
+data:
+  REQUEST-900-EXCLUSION-RULES-BEFORE-CRS.conf: |
+{{ .Files.Get "files/waf/REQUEST-900-EXCLUSION-RULES-BEFORE-CRS.conf" | indent 4 }}
