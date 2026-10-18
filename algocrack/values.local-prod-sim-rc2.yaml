@@ -1,10 +1,8 @@
-# Local production-simulation overlay for release candidate 1.0.0-rc2.
-# Use with secrets supplied out-of-band (never commit real credentials):
-#   helm upgrade --install algocrack ./helm/algocrack \
-#     -f helm/algocrack/values.local-prod-sim-rc2.yaml \
-#     --set secrets.internalServiceToken=... \
-#     --set mysql.auth.password=... \
-#     ...
+# Local production-simulation overlay for release candidate v1.0.0-rc.2.
+#
+# This overlay deliberately reuses the existing cluster Secrets. Do not put
+# credentials, JWT keys, OAuth values, or INTERNAL_SERVICE_TOKEN here.
+# See helm/RC2_DEPLOYMENT_RUNBOOK.md before adopting existing resources.
 #
 # Phase A (pre-sandbox-runbook): static/API complexity only; CXE profile Jobs stay off.
 # Phase B (post-runbook): apply values.local-prod-sim-rc2-complexity-dynamic.yaml overlay.
@@ -12,19 +10,33 @@
 namespace:
   name: algocrack
 
+# Existing Minikube Deployments use immutable `app: <component>` selectors.
+# This must be removed after a deliberate migration to native chart selectors.
+adoption:
+  legacySelectors: true
+
 images:
   apiGateway:
-    tag: 1.0.0-rc2
+    tag: v1.0.0-rc.2
+    pullPolicy: IfNotPresent
   authService:
-    tag: 1.0.0-rc2
+    tag: v1.0.0-rc.2
+    pullPolicy: IfNotPresent
   problemService:
-    tag: 1.0.0-rc2
+    tag: v1.0.0-rc.2
+    pullPolicy: IfNotPresent
   submissionService:
-    tag: 1.0.0-rc2
+    tag: v1.0.0-rc.2
+    pullPolicy: IfNotPresent
   codeExecutionEngine:
-    tag: 1.0.0-rc2
+    tag: v1.0.0-rc.2
+    pullPolicy: IfNotPresent
   frontend:
-    tag: 1.0.0-rc2
+    tag: v1.0.0-rc.2
+    pullPolicy: IfNotPresent
+  waf:
+    tag: v1.0.0-rc.2
+    pullPolicy: IfNotPresent
 
 ingress:
   enabled: true
@@ -34,8 +46,23 @@ services:
   codeExecutionEngine:
     backend: kubernetes-job
   frontend:
-    publicApiBaseUrl: http://algocrack.local/api
+    # Browser calls are relative (/api/...) so ingress remains the sole public
+    # route. NEXT_PUBLIC_* values are compiled into the published Next.js
+    # bundle; this runtime ConfigMap cannot override a non-empty baked value.
+    publicApiBaseUrl: ""
     internalApiBaseUrl: http://waf:8080
+
+auth:
+  google:
+    redirectUri: http://algocrack.local/api/v1/auth/login/oauth2/code/google
+
+waf:
+  modsecRuleEngine: "On"
+  backend: http://api-gateway:9090
+  # Minikube ingress-nginx controller is on the cluster Pod network. Trust
+  # only that network when accepting X-Real-IP for per-client WAF limits.
+  trustedProxyCidrs:
+    - 10.244.0.0/16
 
 monitoring:
   enabled: true

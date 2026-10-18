@@ -6,6 +6,11 @@ global:
   imagePullSecrets: []
   storageClass: ""
 
+# Leave false for normal installs. Set true only for the one-time migration of
+# the pre-Helm `app: <component>` workloads in the existing local namespace.
+adoption:
+  legacySelectors: false
+
 images:
   apiGateway:
     repository: hrishabhjoshi/api-gateway

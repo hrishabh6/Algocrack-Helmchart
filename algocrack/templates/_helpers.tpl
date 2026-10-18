@@ -20,8 +20,12 @@ app.kubernetes.io/component: {{ . }}
 
 {{- define "algocrack.componentSelectorLabels" -}}
 {{- $ctx := .context -}}
+{{- if $ctx.Values.adoption.legacySelectors }}
+app: {{ .component }}
+{{- else }}
 {{- include "algocrack.selectorLabels" $ctx }}
 app.kubernetes.io/component: {{ .component }}
+{{- end }}
 {{- end -}}
 
 {{- define "algocrack.appSecretName" -}}

@@ -100,12 +100,18 @@ spec:
           envFrom:
             - configMapRef:
                 name: algocrack-config
+            # The complexity-profile worker calls authenticated internal APIs.
+            # Keep the token in the existing application Secret, never a
+            # ConfigMap or Helm values file.
+            - secretRef:
+                name: {{ include "algocrack.appSecretName" . }}
           env:
             - name: SERVER_PORT
               value: "8081"
             - name: KUBERNETES_NAMESPACE
               valueFrom:
                 fieldRef:
+                  apiVersion: v1
                   fieldPath: metadata.namespace
             {{- if .Values.complexityProfile.enabled }}
             - name: EXECUTION_COMPLEXITY_PROFILE_SANDBOX_REDIS_USERNAME
