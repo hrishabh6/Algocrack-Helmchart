@@ -1,0 +1,30 @@
+# RC3 CXE routing overlay for the existing local Minikube Helm release.
+#
+# Apply only with --reuse-values so all release-7 settings, including WAF
+# exclusions, existing Secrets, ingress/OAuth, PVCs, Redis, MySQL, and
+# observability, remain unchanged. Do not use the RC2 overlay for this rollout.
+#
+# The deployment image and transient Kubernetes execution Job image both derive
+# from images.codeExecutionEngine through algocrack-config's KUBERNETES_JOB_IMAGE.
+images:
+  apiGateway:
+    tag: v1.0.0-rc.2
+    pullPolicy: IfNotPresent
+  authService:
+    tag: v1.0.0-rc.2
+    pullPolicy: IfNotPresent
+  problemService:
+    tag: v1.0.0-rc.2
+    pullPolicy: IfNotPresent
+  submissionService:
+    tag: v1.0.0-rc.2
+    pullPolicy: IfNotPresent
+  codeExecutionEngine:
+    tag: v1.0.0-rc.3
+    pullPolicy: IfNotPresent
+  frontend:
+    tag: v1.0.0-rc.2
+    pullPolicy: IfNotPresent
+  waf:
+    tag: v1.0.0-rc.2
+    pullPolicy: IfNotPresent

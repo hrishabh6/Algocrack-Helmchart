@@ -76,6 +76,10 @@ spec:
     metadata:
       labels:
         {{- include "algocrack.componentSelectorLabels" (dict "context" . "component" "code-execution-engine") | nindent 8 }}
+        # This marks only the long-lived CXE HTTP API pod. Execution Jobs share
+        # the legacy `app=code-execution-engine` label but must never become
+        # Service endpoints for port 8081.
+        algocrack.io/cxe-api: "true"
     spec:
       serviceAccountName: cxe-job-runner
       {{- include "algocrack.imagePullSecrets" . | nindent 6 }}
@@ -158,6 +162,7 @@ metadata:
 spec:
   selector:
     {{- include "algocrack.componentSelectorLabels" (dict "context" . "component" "code-execution-engine") | nindent 4 }}
+    algocrack.io/cxe-api: "true"
   ports:
     - name: http
       port: 8081
