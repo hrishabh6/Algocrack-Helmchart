@@ -8,6 +8,9 @@
 # Phase B (post-runbook): apply values.local-prod-sim-rc2-complexity-dynamic.yaml overlay.
 
 namespace:
+  # The namespace already exists and holds the database volumes and Secrets.
+  # Leaving it out of the release keeps `helm uninstall` from deleting it.
+  create: false
   name: algocrack
 
 # Existing Minikube Deployments use immutable `app: <component>` selectors.
@@ -40,7 +43,10 @@ images:
 
 ingress:
   enabled: true
-  host: algocrack.local
+  # Google allows plain HTTP only for localhost, and the published auth image
+  # only accepts post-login redirects that start with http://localhost:3000.
+  # Reach this host with: kubectl -n ingress-nginx port-forward svc/ingress-nginx-controller 3000:80
+  host: localhost
 
 services:
   codeExecutionEngine:
@@ -54,7 +60,9 @@ services:
 
 auth:
   google:
-    redirectUri: http://algocrack.local/api/v1/auth/login/oauth2/code/google
+    # Must match the browser origin exactly, including the port. Register this
+    # same URI in Google Cloud Console. Do not use algocrack.local over HTTP.
+    redirectUri: http://localhost:3000/api/v1/auth/login/oauth2/code/google
 
 waf:
   modsecRuleEngine: "On"
@@ -66,6 +74,16 @@ waf:
 
 monitoring:
   enabled: true
+
+# Match the live Bound claims. An empty storage class would omit
+# storageClassName and let server-side apply try to clear an immutable field.
+mysql:
+  persistence:
+    storageClass: standard
+
+redis:
+  persistence:
+    storageClass: standard
 
 complexity:
   submission:

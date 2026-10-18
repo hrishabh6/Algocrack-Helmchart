@@ -4,6 +4,10 @@ kind: PersistentVolumeClaim
 metadata:
   name: mysql-data
   namespace: {{ include "algocrack.namespace" . }}
+  annotations:
+    # Helm uninstall must not delete this claim. The Minikube StorageClass
+    # reclaim policy is Delete, so a deleted claim would remove the database.
+    helm.sh/resource-policy: keep
   labels:
     {{- include "algocrack.labels" . | nindent 4 }}
     {{- include "algocrack.componentLabel" "mysql" | nindent 4 }}
