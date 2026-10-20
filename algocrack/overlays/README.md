@@ -18,6 +18,13 @@ routing lineage. A newer release number does not make an older overlay
 obsolete. Release-specific hotfix overlays belong here only after their owning
 work is committed and approved.
 
+The committed RC3 Phase 0 hotfix overlays are retained here so revision 11 and
+its rollback path can be reconstructed without changing the currently running
+release:
+
+- `values.local-prod-sim-rc3-phase0-job-timeouts.yaml`
+- `values.local-prod-sim-rc3-stats-lock.yaml`
+
 ## Classification rules
 
 - Keep chart defaults and templates in the chart root.
