@@ -36,8 +36,8 @@ data:
   KUBERNETES_JOB_IMAGE: {{ printf "%s:%s" .Values.images.codeExecutionEngine.repository .Values.images.codeExecutionEngine.tag | quote }}
   KUBERNETES_JOB_IMAGE_PULL_POLICY: {{ .Values.images.codeExecutionEngine.pullPolicy | quote }}
   KUBERNETES_SERVICE_ACCOUNT_NAME: cxe-job-runner
-  KUBERNETES_JOB_ACTIVE_DEADLINE_SECONDS: "30"
-  KUBERNETES_JOB_COMPLETION_TIMEOUT_SECONDS: "40"
+  KUBERNETES_JOB_ACTIVE_DEADLINE_SECONDS: {{ .Values.services.codeExecutionEngine.kubernetes.jobActiveDeadlineSeconds | quote }}
+  KUBERNETES_JOB_COMPLETION_TIMEOUT_SECONDS: {{ .Values.services.codeExecutionEngine.kubernetes.jobCompletionTimeoutSeconds | quote }}
   KUBERNETES_JOB_RESULT_POLL_INTERVAL_MILLIS: "1000"
   KUBERNETES_JOB_MAX_ATTEMPTS: "2"
   KUBERNETES_JOB_RETRY_DELAY_MILLIS: "1000"

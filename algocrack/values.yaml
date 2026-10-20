@@ -210,6 +210,9 @@ services:
     replicaCount: 1
     workerCount: 5
     backend: worker-pod
+    kubernetes:
+      jobActiveDeadlineSeconds: 30
+      jobCompletionTimeoutSeconds: 40
     queue:
       name: execution:queue
       statusPrefix: execution:status

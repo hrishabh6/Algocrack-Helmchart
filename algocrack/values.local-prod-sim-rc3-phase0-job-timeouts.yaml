@@ -1,0 +1,16 @@
+# Phase 0 only: widen Kubernetes execution Job deadlines so Spring Boot can finish
+# starting inside the 256Mi Job pod before compile/run. Apply with --reuse-values on
+# top of the deployed RC3 release together with the Submission Service image that
+# includes the 50s CxeExecutionPoll budget (git ba273ea).
+#
+# Does not change CXE/Job image tags, routing backend, PVCs, or unrelated services.
+services:
+  codeExecutionEngine:
+    kubernetes:
+      jobActiveDeadlineSeconds: 120
+      jobCompletionTimeoutSeconds: 130
+
+images:
+  submissionService:
+    tag: v1.0.0-dev-phase0-poll-20261020
+    pullPolicy: IfNotPresent
