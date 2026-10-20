@@ -45,12 +45,12 @@ kubectl get deployment -A | grep metrics-server
 
 Start from:
 
-- [algocrack/values.minikube.example.yaml](/home/hrishabh/codebases/java/leetcode/helm/algocrack/values.minikube.example.yaml)
+- [algocrack/overlays/examples/values.minikube.example.yaml](algocrack/overlays/examples/values.minikube.example.yaml)
 
 Create a local verification file:
 
 ```bash
-cp helm/algocrack/values.minikube.example.yaml helm/my-values.local.yaml
+cp helm/algocrack/overlays/examples/values.minikube.example.yaml helm/my-values.local.yaml
 ```
 
 Replace all placeholders with real values:

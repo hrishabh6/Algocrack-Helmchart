@@ -1,3 +1,14 @@
 # Local values may contain credentials and key material.
-my-values.local.yaml
+/my-values.local.yaml
+/my-values.*.local.yaml
+/algocrack/my-values.local.yaml
+/algocrack/my-values.*.local.yaml
+
+# Generated Helm output and packaged charts are reproducible artifacts.
+/rendered/
+/*.rendered.yaml
+/algocrack-*.tgz
+
+# Local Helm tool state must not be committed.
+/.helm/
 

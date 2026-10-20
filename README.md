@@ -6,6 +6,17 @@ The chart lives under:
 
 - `helm/algocrack/`
 
+Repository-owned values are grouped by purpose:
+
+- `algocrack/values.yaml` — chart defaults; Helm loads this automatically.
+- `algocrack/overlays/examples/` — safe starter files to copy into a local,
+  ignored values file.
+- `algocrack/overlays/releases/` — retained release and rollback overlays.
+- `algocrack/overlays/README.md` — overlay lifecycle and classification rules.
+
+Generated renders and local values do not belong in the chart or overlay
+directories. See `.gitignore` for the supported local paths.
+
 This guide is the repo-owned path for installing, upgrading, validating, and removing the chart on a real cluster.
 
 For a step-by-step live verification checklist, see:
@@ -57,13 +68,13 @@ Before installing, make sure you have:
 
 Start from the safe committed example files:
 
-- [algocrack/values.example.yaml](/home/hrishabh/codebases/java/leetcode/helm/algocrack/values.example.yaml)
-- [algocrack/values.minikube.example.yaml](/home/hrishabh/codebases/java/leetcode/helm/algocrack/values.minikube.example.yaml)
+- [algocrack/overlays/examples/values.example.yaml](algocrack/overlays/examples/values.example.yaml)
+- [algocrack/overlays/examples/values.minikube.example.yaml](algocrack/overlays/examples/values.minikube.example.yaml)
 
 Create your own local file, for example:
 
 ```bash
-cp helm/algocrack/values.minikube.example.yaml helm/my-values.local.yaml
+cp helm/algocrack/overlays/examples/values.minikube.example.yaml helm/my-values.local.yaml
 ```
 
 `helm/my-values.local.yaml` is ignored by Git because it may contain

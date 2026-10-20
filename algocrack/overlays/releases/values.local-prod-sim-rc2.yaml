@@ -5,7 +5,9 @@
 # See helm/RC2_DEPLOYMENT_RUNBOOK.md before adopting existing resources.
 #
 # Phase A (pre-sandbox-runbook): static/API complexity only; CXE profile Jobs stay off.
-# Phase B (post-runbook): apply values.local-prod-sim-rc2-complexity-dynamic.yaml overlay.
+# Historical Phase B overlay is retained beside this file as
+# values.local-prod-sim-rc2-complexity-dynamic.yaml. It is not part of the
+# current CXE runner migration.
 
 namespace:
   # The namespace already exists and holds the database volumes and Secrets.

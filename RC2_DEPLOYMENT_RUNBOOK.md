@@ -183,9 +183,9 @@ the namespace.
 ```bash
 kubectl config current-context
 kubectl get deploy,svc,ingress,pvc -n algocrack
-helm lint ./helm/algocrack -f helm/algocrack/values.local-prod-sim-rc2.yaml
+helm lint ./helm/algocrack -f helm/algocrack/overlays/releases/values.local-prod-sim-rc2.yaml
 helm template algocrack ./helm/algocrack --namespace algocrack \
-  -f helm/algocrack/values.local-prod-sim-rc2.yaml > /tmp/algocrack-rc2.yaml
+  -f helm/algocrack/overlays/releases/values.local-prod-sim-rc2.yaml > /tmp/algocrack-rc2.yaml
 kubectl apply --server-side --dry-run=server -f /tmp/algocrack-rc2.yaml
 ```
 
@@ -208,7 +208,7 @@ helm upgrade --install algocrack ./helm/algocrack \
   --namespace algocrack \
   --create-namespace \
   --take-ownership \
-  -f helm/algocrack/values.local-prod-sim-rc2.yaml
+  -f helm/algocrack/overlays/releases/values.local-prod-sim-rc2.yaml
 ```
 
 `--create-namespace` is a no-op while `algocrack` exists. The chart itself does
