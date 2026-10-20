@@ -1,0 +1,8 @@
+# Temporary Submission Service image for the optimistic-lock persistence fix.
+# Apply with --reuse-values on top of the deployed RC3 release.
+# This overlay changes only the Submission Service image. CXE RC3, the
+# execution Job image, WAF, OAuth, Redis, and MySQL stay as they are.
+images:
+  submissionService:
+    tag: v1.0.0-dev-stats-lock-20261019b
+    pullPolicy: IfNotPresent
