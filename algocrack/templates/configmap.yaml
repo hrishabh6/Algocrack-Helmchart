@@ -71,6 +71,9 @@ data:
   EXECUTION_ROUTING_MODE_BACKENDS_SUBMISSION: {{ .Values.services.codeExecutionEngine.executionRouting.submissionBackend | quote }}
   EXECUTION_ROUTING_MODE_BACKENDS_PLAYGROUND: {{ .Values.services.codeExecutionEngine.executionRouting.playgroundBackend | quote }}
   EXECUTION_ROUTING_MODE_BACKENDS_COMPLEXITY_PROFILE: {{ .Values.services.codeExecutionEngine.executionRouting.complexityProfileBackend | quote }}
+  PLAYGROUND_API_ENABLED: {{ dig "playgroundApi" "enabled" false .Values.services.codeExecutionEngine | quote }}
+  PLAYGROUND_RUN_ENABLED: {{ dig "playgroundApi" "runEnabled" false .Values.services.codeExecutionEngine | quote }}
+  EXECUTION_PLAYGROUND_ENABLED: {{ dig "playgroundApi" "enabled" false .Values.services.codeExecutionEngine | quote }}
 ---
 apiVersion: v1
 kind: ConfigMap

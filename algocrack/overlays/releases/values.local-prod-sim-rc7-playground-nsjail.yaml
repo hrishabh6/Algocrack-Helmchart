@@ -1,11 +1,38 @@
-# NOT APPLIED. Do not helm-upgrade the live algocrack release with this file.
-# Playground stays on Kubernetes Jobs until this overlay is explicitly approved.
+# NOT APPLIED. Do not helm-upgrade revision 13 until this overlay is explicitly approved.
 #
-# Requires the CXE image that contains PlaygroundNsJailExecutor and
-# PLAYGROUND_API_ENABLED=true / PLAYGROUND_RUN_ENABLED=true on Submission Service.
-# Java and Python only. SUBMISSION routing is left unchanged from the caller values.
+# Java Playground only. CXE keeps Python playground on Kubernetes Jobs even when
+# playgroundBackend is PERSISTENT_NSJAIL. SUBMISSION routing is not changed here;
+# apply this file together with the already-deployed Stage 2 values.
+#
+# Frontend nav stays hidden until the frontend image is rebuilt with
+# NEXT_PUBLIC_PLAYGROUND_ENABLED=true. That variable is not read from this ConfigMap.
+#
+# Images below are not the live revision-13 tags. Build and minikube-load them
+# before any upgrade. Do not apply this file by itself: layer it on the revision
+# 13 values so SUBMISSION stays PERSISTENT_NSJAIL.
+
+images:
+  codeExecutionEngine:
+    repository: hrishabhjoshi/code-execution-engine
+    tag: v1.0.0-rc.7-cxe-phase71-java-pg
+    pullPolicy: Never
+
+nsjailRunner:
+  enabled: true
+  phase7LiveRoutingAcknowledged: true
+  image:
+    repository: hrishabhjoshi/cxe-nsjail-runner
+    tag: phase71-java-pg
+    pullPolicy: Never
 
 services:
   codeExecutionEngine:
     executionRouting:
       playgroundBackend: PERSISTENT_NSJAIL
+    playgroundApi:
+      enabled: true
+      runEnabled: true
+    executionV2:
+      enabled: true
+      reaperEnabled: true
+      persistentRunnerEnabled: true
