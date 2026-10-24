@@ -1,0 +1,151 @@
+{{- if .Values.nsjailRunner.enabled }}
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: cxe-nsjail-runner
+  namespace: {{ include "algocrack.namespace" . }}
+  labels:
+    {{- include "algocrack.labels" . | nindent 4 }}
+    {{- include "algocrack.componentLabel" "cxe-nsjail-runner" | nindent 4 }}
+automountServiceAccountToken: false
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cxe-nsjail-runner-config
+  namespace: {{ include "algocrack.namespace" . }}
+  labels:
+    {{- include "algocrack.labels" . | nindent 4 }}
+    {{- include "algocrack.componentLabel" "cxe-nsjail-runner" | nindent 4 }}
+data:
+  CXE_REDIS_HOST: {{ include "algocrack.redisHost" . | quote }}
+  CXE_REDIS_PORT: {{ include "algocrack.redisPort" . | quote }}
+  CXE_V2_KEY_PREFIX: {{ .Values.nsjailRunner.redis.keyPrefix | quote }}
+  CXE_RUNNER_ID: {{ .Values.nsjailRunner.runnerId | quote }}
+  CXE_NSJAIL_BIN: /usr/local/bin/nsjail
+  CXE_RUNNER_WORKSPACE_ROOT: /workspace
+  CXE_RUNNER_QUARANTINE_ROOT: /quarantine
+  CXE_RUNNER_BLOCK_TIMEOUT_SECONDS: {{ .Values.nsjailRunner.blockTimeoutSeconds | quote }}
+  CXE_RUNNER_LEASE_SECONDS: {{ .Values.nsjailRunner.leaseSeconds | quote }}
+  CXE_RUNNER_HEARTBEAT_SECONDS: {{ .Values.nsjailRunner.heartbeatSeconds | quote }}
+  CXE_RUNNER_MAX_OUTPUT_BYTES: {{ .Values.nsjailRunner.maxOutputBytes | quote }}
+  EXECUTION_EXTRA_CLASSPATH: /opt/cxe-runner/lib/*
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cxe-nsjail-runner
+  namespace: {{ include "algocrack.namespace" . }}
+  labels:
+    {{- include "algocrack.labels" . | nindent 4 }}
+    {{- include "algocrack.componentLabel" "cxe-nsjail-runner" | nindent 4 }}
+spec:
+  replicas: {{ .Values.nsjailRunner.replicaCount }}
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      {{- include "algocrack.componentSelectorLabels" (dict "context" . "component" "cxe-nsjail-runner") | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "algocrack.componentSelectorLabels" (dict "context" . "component" "cxe-nsjail-runner") | nindent 8 }}
+        algocrack.io/cxe-nsjail-runner: "true"
+    spec:
+      serviceAccountName: cxe-nsjail-runner
+      automountServiceAccountToken: false
+      terminationGracePeriodSeconds: {{ .Values.nsjailRunner.terminationGracePeriodSeconds }}
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        runAsGroup: 10001
+        fsGroup: 10001
+        seccompProfile:
+          type: Localhost
+          localhostProfile: {{ .Values.nsjailRunner.seccomp.localhostProfile | quote }}
+      {{- include "algocrack.imagePullSecrets" . | nindent 6 }}
+      containers:
+        - name: runner
+          image: {{ printf "%s:%s" .Values.nsjailRunner.image.repository .Values.nsjailRunner.image.tag }}
+          imagePullPolicy: {{ .Values.nsjailRunner.image.pullPolicy }}
+          envFrom:
+            - configMapRef:
+                name: cxe-nsjail-runner-config
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["ALL"]
+          resources:
+            {{- toYaml .Values.nsjailRunner.resources | nindent 12 }}
+          volumeMounts:
+            - name: workspace
+              mountPath: /workspace
+            - name: quarantine
+              mountPath: /quarantine
+            - name: tmp
+              mountPath: /tmp
+          startupProbe:
+            exec:
+              command: ["/usr/local/bin/runner-probe.sh", "startup"]
+            failureThreshold: 30
+            periodSeconds: 5
+          readinessProbe:
+            exec:
+              command: ["/usr/local/bin/runner-probe.sh", "readiness"]
+            periodSeconds: 10
+            failureThreshold: 3
+          livenessProbe:
+            exec:
+              command: ["/usr/local/bin/runner-probe.sh", "liveness"]
+            periodSeconds: 15
+            failureThreshold: 3
+      volumes:
+        - name: workspace
+          emptyDir:
+            sizeLimit: {{ .Values.nsjailRunner.workspace.sizeLimit }}
+        - name: quarantine
+          emptyDir:
+            sizeLimit: {{ .Values.nsjailRunner.quarantine.sizeLimit }}
+        - name: tmp
+          emptyDir:
+            sizeLimit: {{ .Values.nsjailRunner.tmp.sizeLimit }}
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: cxe-nsjail-runner
+  namespace: {{ include "algocrack.namespace" . }}
+  labels:
+    {{- include "algocrack.labels" . | nindent 4 }}
+    {{- include "algocrack.componentLabel" "cxe-nsjail-runner" | nindent 4 }}
+spec:
+  podSelector:
+    matchLabels:
+      algocrack.io/cxe-nsjail-runner: "true"
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress: []
+  egress:
+    - to:
+        - namespaceSelector: {}
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+    {{- if .Values.redis.enabled }}
+    - to:
+        - podSelector:
+            matchLabels:
+              {{- include "algocrack.componentSelectorLabels" (dict "context" . "component" "redis") | nindent 14 }}
+      ports:
+        - protocol: TCP
+          port: 6379
+    {{- else if .Values.externalServices.redis.host }}
+    - ports:
+        - protocol: TCP
+          port: {{ .Values.externalServices.redis.port | int }}
+    {{- end }}
+{{- end }}

@@ -64,6 +64,10 @@ data:
   EXECUTION_COMPLEXITY_PROFILE_QUEUE_CAPACITY: {{ .Values.complexity.cxe.queueCapacity | quote }}
   EXECUTION_COMPLEXITY_PROFILE_MAX_CONCURRENT_JOBS: {{ .Values.complexity.cxe.maxConcurrentJobs | quote }}
   EXECUTION_COMPLEXITY_PROFILE_SANDBOX_REDIS_REQUIRED: {{ .Values.complexityProfile.enabled | quote }}
+  EXECUTION_V2_ENABLED: {{ .Values.services.codeExecutionEngine.executionV2.enabled | quote }}
+  EXECUTION_V2_REAPER_ENABLED: {{ .Values.services.codeExecutionEngine.executionV2.reaperEnabled | quote }}
+  EXECUTION_PERSISTENT_RUNNER_ENABLED: {{ .Values.services.codeExecutionEngine.executionV2.persistentRunnerEnabled | quote }}
+  EXECUTION_V2_KEY_PREFIX: {{ .Values.services.codeExecutionEngine.executionV2.keyPrefix | quote }}
 ---
 apiVersion: v1
 kind: ConfigMap

@@ -225,6 +225,11 @@ services:
       pollTimeoutSeconds: 5
       memorySoftLimitMb: 1024
       extraClasspath: /app/libs/*
+    executionV2:
+      enabled: false
+      reaperEnabled: false
+      persistentRunnerEnabled: false
+      keyPrefix: "execution:v2:"
     startupProbe:
       initialDelaySeconds: 30
       periodSeconds: 10
@@ -283,6 +288,39 @@ complexity:
     workerCount: 2
     queueCapacity: 50
     maxConcurrentJobs: 4
+
+# Persistent NsJail runner (Phase 5). Disabled by default; legacy Job/worker queue remains authoritative.
+nsjailRunner:
+  enabled: false
+  replicaCount: 1
+  runnerId: cxe-nsjail-runner-0
+  image:
+    repository: hrishabhjoshi/cxe-nsjail-runner
+    tag: local
+    pullPolicy: IfNotPresent
+  seccomp:
+    localhostProfile: profiles/nsjail-spike.json
+    profileSha256: e33f73c8bb927a36da2a3c9c57a6b7cb19a8aa6617d41661da2f3a83afbf6874
+  redis:
+      keyPrefix: "execution:v2:"
+  blockTimeoutSeconds: 5
+  leaseSeconds: 120
+  heartbeatSeconds: 10
+  maxOutputBytes: 262144
+  terminationGracePeriodSeconds: 180
+  workspace:
+    sizeLimit: 512Mi
+  quarantine:
+    sizeLimit: 128Mi
+  tmp:
+    sizeLimit: 64Mi
+  resources:
+    requests:
+      cpu: 250m
+      memory: 768Mi
+    limits:
+      cpu: "2"
+      memory: 2Gi
 
 complexityProfile:
   enabled: false

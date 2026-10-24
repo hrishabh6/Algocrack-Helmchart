@@ -147,4 +147,25 @@ imagePullSecrets:
 {{- if and .Values.complexity.cxe.profileEnabled (eq .Values.complexity.cxe.sandboxBackend "kubernetes-job") (not .Values.complexity.cxe.productionVerified) }}
   {{- fail "EXECUTION_COMPLEXITY_PROFILE kubernetes-job requires productionVerified=true after sandbox runbook; keep productionVerified=false until verified" }}
 {{- end }}
+
+{{- if .Values.nsjailRunner.enabled }}
+  {{- if ne (int .Values.nsjailRunner.replicaCount) 1 }}
+    {{- fail "nsjailRunner.replicaCount must be 1 for the initial persistent runner release" }}
+  {{- end }}
+  {{- if not .Values.nsjailRunner.image.repository }}
+    {{- fail "nsjailRunner.image.repository is required when nsjailRunner.enabled=true" }}
+  {{- end }}
+  {{- if not .Values.nsjailRunner.image.tag }}
+    {{- fail "nsjailRunner.image.tag is required when nsjailRunner.enabled=true" }}
+  {{- end }}
+  {{- if not .Values.nsjailRunner.seccomp.localhostProfile }}
+    {{- fail "nsjailRunner.seccomp.localhostProfile is required when nsjailRunner.enabled=true" }}
+  {{- end }}
+  {{- if not .Values.nsjailRunner.seccomp.profileSha256 }}
+    {{- fail "nsjailRunner.seccomp.profileSha256 is required when nsjailRunner.enabled=true" }}
+  {{- end }}
+  {{- if .Values.services.codeExecutionEngine.executionV2.persistentRunnerEnabled }}
+    {{- fail "nsjailRunner.enabled with executionV2.persistentRunnerEnabled=true routes live traffic; keep routing disabled until Phase 7 approval" }}
+  {{- end }}
+{{- end }}
 {{- end -}}

@@ -1,0 +1,29 @@
+# RC5 disposable overlay: deploy cxe-nsjail-runner for Phase 5 validation only.
+#
+# Use a dedicated namespace (e.g. algocrack-phase5-disposable) and DO NOT apply
+# to the live algocrack release (rev 11) without explicit approval.
+#
+# Prerequisite: scripts/verify-minikube-nsjail-seccomp.sh on the target node.
+#
+# Example (offline render):
+#   helm template algocrack-phase5-test ./helm/algocrack \
+#     -f values.yaml \
+#     -f overlays/releases/values.local-prod-sim-rc5-nsjail-runner-disposable.yaml \
+#     --namespace algocrack-phase5-disposable
+#
+# CXE orchestrator routing remains on legacy worker/Job paths (executionV2 flags false).
+
+nsjailRunner:
+  enabled: true
+  replicaCount: 1
+  image:
+    repository: hrishabhjoshi/cxe-nsjail-runner
+    tag: local
+    pullPolicy: Never
+
+services:
+  codeExecutionEngine:
+    executionV2:
+      enabled: false
+      reaperEnabled: false
+      persistentRunnerEnabled: false
