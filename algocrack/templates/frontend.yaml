@@ -33,6 +33,8 @@ spec:
               value: "0.0.0.0"
             - name: INTERNAL_API_BASE_URL
               value: {{ .Values.services.frontend.internalApiBaseUrl | quote }}
+            - name: PLAYGROUND_UI_ENABLED
+              value: {{ .Values.services.frontend.runtimeFeatures.playgroundEnabled | quote }}
           resources:
             {{- toYaml .Values.services.frontend.resources | nindent 12 }}
           livenessProbe:

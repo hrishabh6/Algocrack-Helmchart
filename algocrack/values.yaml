@@ -234,8 +234,7 @@ services:
       submissionBackend: LEGACY_QUEUE
       playgroundBackend: KUBERNETES_JOB
       complexityProfileBackend: LEGACY_QUEUE
-    # Runtime flags for the Submission Service playground API. The frontend nav
-    # uses NEXT_PUBLIC_PLAYGROUND_ENABLED, which is fixed when the frontend image is built.
+    # Backend Playground API flags are independent of frontend visibility.
     playgroundApi:
       enabled: false
       runEnabled: false
@@ -268,6 +267,9 @@ services:
     replicaCount: 1
     publicApiBaseUrl: http://localhost:9090
     internalApiBaseUrl: http://waf:8080
+    runtimeFeatures:
+      # Served by the frontend at runtime. Safe default: keep Playground hidden.
+      playgroundEnabled: false
     autoscaling:
       enabled: false
       minReplicas: 1

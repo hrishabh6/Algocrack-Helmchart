@@ -4,8 +4,8 @@
 # playgroundBackend is PERSISTENT_NSJAIL. SUBMISSION routing is not changed here;
 # apply this file together with the already-deployed Stage 2 values.
 #
-# Frontend nav stays hidden until the frontend image is rebuilt with
-# NEXT_PUBLIC_PLAYGROUND_ENABLED=true. That variable is not read from this ConfigMap.
+# Frontend nav visibility is read at runtime from the frontend Pod environment.
+# It does not enable the backend API or execution flags below.
 #
 # Images below are not the live revision-13 tags. Build and minikube-load them
 # before any upgrade. Do not apply this file by itself: layer it on the revision
@@ -26,6 +26,9 @@ nsjailRunner:
     pullPolicy: Never
 
 services:
+  frontend:
+    runtimeFeatures:
+      playgroundEnabled: true
   codeExecutionEngine:
     executionRouting:
       playgroundBackend: PERSISTENT_NSJAIL
