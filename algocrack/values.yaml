@@ -230,6 +230,10 @@ services:
       reaperEnabled: false
       persistentRunnerEnabled: false
       keyPrefix: "execution:v2:"
+    executionRouting:
+      submissionBackend: LEGACY_QUEUE
+      playgroundBackend: KUBERNETES_JOB
+      complexityProfileBackend: LEGACY_QUEUE
     startupProbe:
       initialDelaySeconds: 30
       periodSeconds: 10
@@ -292,6 +296,8 @@ complexity:
 # Persistent NsJail runner (Phase 5). Disabled by default; legacy Job/worker queue remains authoritative.
 nsjailRunner:
   enabled: false
+  # Set true only with Phase 7 operator approval when enabling live v2 routing alongside the runner.
+  phase7LiveRoutingAcknowledged: false
   replicaCount: 1
   runnerId: cxe-nsjail-runner-0
   image:

@@ -1,0 +1,32 @@
+# Phase 7 — Stage 1: deploy persistent runner + v2 reaper; NO live SUBMISSION routing yet.
+# Apply only after operator approval (see context/phase7/APPROVAL_GATE.md).
+#
+# Legacy kubernetes-job path remains authoritative for Run/Submit/Oracle ingress.
+
+nsjailRunner:
+  enabled: true
+  phase7LiveRoutingAcknowledged: false
+  image:
+    repository: hrishabhjoshi/cxe-nsjail-runner
+    tag: phase7-2
+    pullPolicy: Never
+
+services:
+  codeExecutionEngine:
+    # Keep Job fallback configured
+    backend: kubernetes-job
+    executionV2:
+      enabled: true
+      reaperEnabled: true
+      persistentRunnerEnabled: false
+      keyPrefix: "execution:v2:"
+    executionRouting:
+      submissionBackend: LEGACY_QUEUE
+      playgroundBackend: KUBERNETES_JOB
+      complexityProfileBackend: LEGACY_QUEUE
+
+# CXE orchestrator image must include ActiveProcessorCount=2 fix (main @ d484477+).
+images:
+  codeExecutionEngine:
+    tag: v1.0.0-rc.7-cxe-d484477
+    pullPolicy: Never

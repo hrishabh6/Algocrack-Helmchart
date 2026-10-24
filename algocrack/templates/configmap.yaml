@@ -68,6 +68,9 @@ data:
   EXECUTION_V2_REAPER_ENABLED: {{ .Values.services.codeExecutionEngine.executionV2.reaperEnabled | quote }}
   EXECUTION_PERSISTENT_RUNNER_ENABLED: {{ .Values.services.codeExecutionEngine.executionV2.persistentRunnerEnabled | quote }}
   EXECUTION_V2_KEY_PREFIX: {{ .Values.services.codeExecutionEngine.executionV2.keyPrefix | quote }}
+  EXECUTION_ROUTING_MODE_BACKENDS_SUBMISSION: {{ .Values.services.codeExecutionEngine.executionRouting.submissionBackend | quote }}
+  EXECUTION_ROUTING_MODE_BACKENDS_PLAYGROUND: {{ .Values.services.codeExecutionEngine.executionRouting.playgroundBackend | quote }}
+  EXECUTION_ROUTING_MODE_BACKENDS_COMPLEXITY_PROFILE: {{ .Values.services.codeExecutionEngine.executionRouting.complexityProfileBackend | quote }}
 ---
 apiVersion: v1
 kind: ConfigMap

@@ -164,8 +164,8 @@ imagePullSecrets:
   {{- if not .Values.nsjailRunner.seccomp.profileSha256 }}
     {{- fail "nsjailRunner.seccomp.profileSha256 is required when nsjailRunner.enabled=true" }}
   {{- end }}
-  {{- if .Values.services.codeExecutionEngine.executionV2.persistentRunnerEnabled }}
-    {{- fail "nsjailRunner.enabled with executionV2.persistentRunnerEnabled=true routes live traffic; keep routing disabled until Phase 7 approval" }}
+  {{- if and .Values.services.codeExecutionEngine.executionV2.persistentRunnerEnabled (not .Values.nsjailRunner.phase7LiveRoutingAcknowledged) }}
+    {{- fail "nsjailRunner.enabled with executionV2.persistentRunnerEnabled=true routes live traffic; set nsjailRunner.phase7LiveRoutingAcknowledged=true only after Phase 7 operator approval" }}
   {{- end }}
 {{- end }}
 {{- end -}}

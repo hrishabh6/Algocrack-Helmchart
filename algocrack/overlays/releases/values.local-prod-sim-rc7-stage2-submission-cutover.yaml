@@ -1,0 +1,33 @@
+# Phase 7 — Stage 2: route SUBMISSION (Run/Submit/Oracle) to persistent NsJail v2.
+# Requires Stage 1 runner Ready + operator approval. Playground/complexity unchanged.
+
+nsjailRunner:
+  enabled: true
+  phase7LiveRoutingAcknowledged: true
+  image:
+    repository: hrishabhjoshi/cxe-nsjail-runner
+    tag: phase7-2
+    pullPolicy: Never
+
+services:
+  codeExecutionEngine:
+    backend: kubernetes-job
+    executionV2:
+      enabled: true
+      reaperEnabled: true
+      persistentRunnerEnabled: true
+      keyPrefix: "execution:v2:"
+    executionRouting:
+      submissionBackend: PERSISTENT_NSJAIL
+      playgroundBackend: KUBERNETES_JOB
+      complexityProfileBackend: LEGACY_QUEUE
+
+images:
+  codeExecutionEngine:
+    tag: v1.0.0-rc.7-cxe-d484477
+    pullPolicy: Never
+
+complexity:
+  cxe:
+    profileEnabled: false
+    sandboxBackend: local-process
