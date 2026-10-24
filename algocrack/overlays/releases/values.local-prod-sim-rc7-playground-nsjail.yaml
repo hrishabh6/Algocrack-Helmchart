@@ -3,7 +3,7 @@
 # Java Playground only. Non-Java playground execution is rejected by Submission
 # Service and by CXE ingress, so it is not sent to NsJail or the local-process
 # worker. SUBMISSION routing is not changed here. Apply this file on top of the
-# revision 13 values so that routing stays PERSISTENT_NSJAIL.
+# revision 14 values so that routing stays PERSISTENT_NSJAIL.
 #
 # Frontend nav visibility is PLAYGROUND_UI_ENABLED on the frontend Pod. It is
 # independent of the backend API and execution flags below.
@@ -18,7 +18,7 @@ images:
     pullPolicy: Never
   frontend:
     repository: hrishabhjoshi/frontend
-    tag: v1.0.0-rc.7-fe-16c46db
+    tag: v1.0.0-rc.7-fe-c859bc6
     pullPolicy: Never
   submissionService:
     repository: hrishabhjoshi/submission-service
