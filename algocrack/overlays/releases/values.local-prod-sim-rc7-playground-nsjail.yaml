@@ -1,0 +1,11 @@
+# NOT APPLIED. Do not helm-upgrade the live algocrack release with this file.
+# Playground stays on Kubernetes Jobs until this overlay is explicitly approved.
+#
+# Requires the CXE image that contains PlaygroundNsJailExecutor and
+# PLAYGROUND_API_ENABLED=true / PLAYGROUND_RUN_ENABLED=true on Submission Service.
+# Java and Python only. SUBMISSION routing is left unchanged from the caller values.
+
+services:
+  codeExecutionEngine:
+    executionRouting:
+      playgroundBackend: PERSISTENT_NSJAIL
